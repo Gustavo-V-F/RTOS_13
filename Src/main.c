@@ -94,7 +94,7 @@ int main(void)
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
-
+  
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* init code for USB_DEVICE */
@@ -131,11 +131,11 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Handler */
-  osThreadDef(Handler, vHandler_task, osPriorityHigh, 0, 100);
+  osThreadDef(Handler, vHandler_task, osPriorityHigh, 1, 100);
   Handler_handle = osThreadCreate(osThread(Handler), NULL);
 
   /* definition and creation of Periodic */
-  osThreadDef(Periodic, vPeriodic_task, osPriorityNormal, 0, 100);
+  osThreadDef(Periodic, vPeriodic_task, osPriorityNormal, 1, 100);
   Periodic_handle = osThreadCreate(osThread(Periodic), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -209,22 +209,14 @@ void SystemClock_Config(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
-  /*Configure GPIO pin : PA0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriorityGrouping(0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -260,7 +252,7 @@ void vHandler_task(void const * argument)
   {
     osSemaphoreWait(xBinary_semaphore_handle, osWaitForever);
 
-    printf("Handler task: processing event.\r\n");
+    printf("\r\nHandler task: processing event.");
     HAL_Delay(1);
   }
   /* USER CODE END vHandler_task */
@@ -283,8 +275,8 @@ void vPeriodic_task(void const * argument)
 
     printf("\r\nPeriodic task: generating interrupt.");
     HAL_Delay(1);
-    
-    NVIC_SetPendingIRQ( (IRQn_Type) EXTI0_IRQn);
+
+    HAL_NVIC_SetPendingIRQ((IRQn_Type) EXTI0_IRQn);
 
     printf("\r\nPeriodic task: interrupt generated.");
     HAL_Delay(1);

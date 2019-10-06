@@ -61,7 +61,7 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
 extern TIM_HandleTypeDef htim4;
-extern osSemaphoreId xBinary_semaphoreHandle;
+extern osSemaphoreId xBinary_semaphore_handle;
 
 /* USER CODE BEGIN EV */
 
@@ -169,8 +169,8 @@ void DebugMon_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-  
-  osSemaphoreRelease(xBinary_semaphoreHandle);
+
+  osSemaphoreRelease(xBinary_semaphore_handle);
 
   /* USER CODE END EXTI0_IRQn 1 */
 }
